@@ -1,0 +1,42 @@
+﻿@model SSKBooks.ViewModels.OrderCreateViewModel
+
+@{
+    ViewData["Title"] = "Place Order";
+}
+
+<h2>Place an Order</h2>
+
+<form asp-action="Create" method="post">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Select</th>
+                <th>Book Title</th>
+                <th>Quantity</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (int i = 0; i < Model.Books.Count; i++)
+            {
+                <tr>
+                    <td>
+                        <input asp-for="Books[@i].IsSelected" class="form-check-input" />
+                        <input type="hidden" asp-for="Books[@i].BookId" />
+                        <input type="hidden" asp-for="Books[@i].Title" />
+                    </td>
+                    <td>@Model.Books[i].Title</td>
+                    <td>
+                        <input asp-for="Books[@i].Quantity" class="form-control" />
+                        <span asp-validation-for="Books[@i].Quantity" class="text-danger"></span>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <button type="submit" class="btn btn-success">Submit Order</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

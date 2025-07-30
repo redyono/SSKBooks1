@@ -1,0 +1,14 @@
+﻿@{
+    ViewData["Title"] = "Home";
+}
+
+<div class="text-center mt-5">
+    <h1 class="display-4">Welcome to SSKBooks 📚</h1>
+    <p class="lead">Your one-stop shop for books by top authors.</p>
+
+    <div class="mt-4">
+        <a class="btn btn-primary btn-lg m-2" asp-controller="Books" asp-action="Index">Browse Books</a>
+        <a class="btn btn-outline-secondary btn-lg m-2" asp-controller="Authors" asp-action="Index">Our Authors</a>
+        <a class="btn btn-outline-success btn-lg m-2" asp-controller="Categories" asp-action="Index">Categories</a>
+    </div>
+</div>
