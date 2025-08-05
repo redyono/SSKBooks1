@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Moq;
 using SSKBooks.Data;
 using SSKBooks.Models;
 using SSKBooks.Services;
@@ -7,35 +6,35 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 
-public class OrderServiceTests
+namespace SSKBooks1.Tests.Services
 {
-    private SSKBooksDbContext GetInMemoryDbContext()
+    public class OrderServiceTests
     {
-        var options = new DbContextOptionsBuilder<SSKBooksDbContext>()
-            .UseInMemoryDatabase(databaseName: "TestDB")
-            .Options;
+        private SSKBooksDbContext GetInMemoryDbContext()
+        {
+            var options = new DbContextOptionsBuilder<SSKBooksDbContext>()
+                .UseInMemoryDatabase(databaseName: "TestDB")
+                .Options;
 
-        return new SSKBooksDbContext(options);
-    }
+            return new SSKBooksDbContext(options);
+        }
 
-    [Fact]
-    public async Task GetAvailableBooksAsync_ReturnsBooks()
-    {
-        // Arrange
-        var context = GetInMemoryDbContext();
-        context.Books.AddRange(
-            new Book { Id = 1, Title = "Book A" },
-            new Book { Id = 2, Title = "Book B" }
-        );
-        await context.SaveChangesAsync();
+        [Fact]
+        public async Task GetAvailableBooksAsync_ReturnsBooks()
+        {
+            var context = GetInMemoryDbContext();
+            context.Books.AddRange(
+                new Book { Id = 1, Title = "Book A" },
+                new Book { Id = 2, Title = "Book B" }
+            );
+            await context.SaveChangesAsync();
 
-        var service = new OrderService(context);
+            var service = new OrderService(context);
 
-        // Act
-        var books = await service.GetAvailableBooksAsync();
+            var books = await service.GetAvailableBooksAsync();
 
-        // Assert
-        Assert.NotNull(books);
-        Assert.Equal(2, books.Count);
+            Assert.NotNull(books);
+            Assert.Equal(2, books.Count);
+        }
     }
 }
