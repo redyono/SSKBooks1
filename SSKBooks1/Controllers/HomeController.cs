@@ -38,5 +38,10 @@ namespace SSKBooks1.Controllers
         {
             return View("~/Views/Shared/Error500.cshtml");
         }
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
     }
 }

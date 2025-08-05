@@ -25,6 +25,11 @@ public class Program
 
         builder.Services.AddRazorPages();
         builder.Services.AddControllersWithViews();
+        builder.Services.ConfigureApplicationCookie(options =>
+        {
+            options.AccessDeniedPath = "/Home/AccessDenied";
+        });
+
 
         var app = builder.Build();
 
