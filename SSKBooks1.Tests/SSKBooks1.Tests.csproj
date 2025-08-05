@@ -28,4 +28,8 @@
     <Folder Include="Services\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\SSKBooks1\SSKBooks1.csproj" />
+  </ItemGroup>
+
 </Project>
