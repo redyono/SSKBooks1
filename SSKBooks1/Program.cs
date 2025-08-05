@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SSKBooks.Data;
-using SSKBooks1.Services;
+using SSKBooks.Services;
 
 public class Program
 {
@@ -24,13 +24,15 @@ public class Program
         .AddRoles<IdentityRole>()
         .AddEntityFrameworkStores<SSKBooksDbContext>();
 
+        builder.Services.AddScoped<IOrderService, OrderService>();
+
         builder.Services.AddRazorPages();
         builder.Services.AddControllersWithViews();
         builder.Services.ConfigureApplicationCookie(options =>
         {
             options.AccessDeniedPath = "/Home/AccessDenied";
         });
-        builder.Services.AddScoped<IOrderService, OrderService>();
+      
 
 
         var app = builder.Build();
