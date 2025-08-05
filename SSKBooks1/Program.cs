@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SSKBooks.Data;
+using SSKBooks1.Services;
 
 public class Program
 {
@@ -29,6 +30,7 @@ public class Program
         {
             options.AccessDeniedPath = "/Home/AccessDenied";
         });
+        builder.Services.AddScoped<IOrderService, OrderService>();
 
 
         var app = builder.Build();
