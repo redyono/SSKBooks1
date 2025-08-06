@@ -1,42 +1,36 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
-using SSKBooks.Data;
 using SSKBooks.Models;
+using SSKBooks.Services;
+using System.Threading.Tasks;
 
 namespace SSKBooks1.Controllers
 {
     public class CategoriesController : Controller
     {
-        private readonly SSKBooksDbContext _context;
+        private readonly ICategoryService _categoryService;
 
-        public CategoriesController(SSKBooksDbContext context)
+        public CategoriesController(ICategoryService categoryService)
         {
-            _context = context;
+            _categoryService = categoryService;
         }
 
-        // 🔓 Public
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Categories.ToListAsync());
+            var categories = await _categoryService.GetAllAsync();
+            return View(categories);
         }
 
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
 
-            var category = await _context.Categories
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var category = await _categoryService.GetByIdAsync(id.Value);
             if (category == null) return NotFound();
 
             return View(category);
         }
 
-        // 🔒 Admin Only
         [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
@@ -50,8 +44,7 @@ namespace SSKBooks1.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(category);
-                await _context.SaveChangesAsync();
+                await _categoryService.CreateAsync(category);
                 return RedirectToAction(nameof(Index));
             }
             return View(category);
@@ -62,7 +55,7 @@ namespace SSKBooks1.Controllers
         {
             if (id == null) return NotFound();
 
-            var category = await _context.Categories.FindAsync(id);
+            var category = await _categoryService.GetByIdAsync(id.Value);
             if (category == null) return NotFound();
 
             return View(category);
@@ -77,16 +70,9 @@ namespace SSKBooks1.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(category);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CategoryExists(category.Id)) return NotFound();
-                    else throw;
-                }
+                var updated = await _categoryService.UpdateAsync(category);
+                if (!updated) return NotFound();
+
                 return RedirectToAction(nameof(Index));
             }
             return View(category);
@@ -97,8 +83,7 @@ namespace SSKBooks1.Controllers
         {
             if (id == null) return NotFound();
 
-            var category = await _context.Categories
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var category = await _categoryService.GetByIdAsync(id.Value);
             if (category == null) return NotFound();
 
             return View(category);
@@ -109,19 +94,10 @@ namespace SSKBooks1.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var category = await _context.Categories.FindAsync(id);
-            if (category != null)
-            {
-                _context.Categories.Remove(category);
-                await _context.SaveChangesAsync();
-            }
+            var deleted = await _categoryService.DeleteAsync(id);
+            if (!deleted) return NotFound();
 
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool CategoryExists(int id)
-        {
-            return _context.Categories.Any(e => e.Id == id);
         }
     }
 }
