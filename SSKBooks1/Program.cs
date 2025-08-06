@@ -25,20 +25,19 @@ public class Program
         .AddRoles<IdentityRole>()
         .AddEntityFrameworkStores<SSKBooksDbContext>();
 
+        // Register services
         builder.Services.AddScoped<IOrderService, OrderService>();
         builder.Services.AddScoped<IBookService, BookService>();
         builder.Services.AddScoped<IAuthorService, AuthorService>();
         builder.Services.AddScoped<ICategoryService, CategoryService>();
 
-
         builder.Services.AddRazorPages();
         builder.Services.AddControllersWithViews();
+
         builder.Services.ConfigureApplicationCookie(options =>
         {
             options.AccessDeniedPath = "/Home/AccessDenied";
         });
-      
-
 
         var app = builder.Build();
 
@@ -49,10 +48,15 @@ public class Program
             await DbInitializer.SeedAdminUserAsync(services);
         }
 
+        // Error handling for non-development environments
         if (!app.Environment.IsDevelopment())
         {
+            // 500 - Internal Server Error
             app.UseExceptionHandler("/Home/Error500");
+
+            // 404 - Not Found
             app.UseStatusCodePagesWithReExecute("/Home/Error{0}");
+
             app.UseHsts();
         }
 
@@ -72,7 +76,6 @@ public class Program
             name: "default",
             pattern: "{controller=Home}/{action=Index}/{id?}");
 
-        // Enable Identity UI Razor Pages
         app.MapRazorPages();
 
         await app.RunAsync();

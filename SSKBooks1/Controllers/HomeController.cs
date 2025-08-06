@@ -31,17 +31,17 @@ namespace SSKBooks1.Controllers
 
         public IActionResult Error404()
         {
-            return View("~/Views/Shared/Error404.cshtml");
+            return View("Error404");
         }
 
         public IActionResult Error500()
         {
-            return View("~/Views/Shared/Error500.cshtml");
+            return View("Error500");
         }
+
         public IActionResult AccessDenied()
         {
             return View();
         }
-
     }
 }
