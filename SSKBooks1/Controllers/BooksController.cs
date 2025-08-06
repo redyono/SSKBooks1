@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
 using SSKBooks.Data;
 using SSKBooks.Models;
 
@@ -21,9 +20,18 @@ namespace SSKBooks1.Controllers
         }
 
         // GET: Books
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string searchTerm)
         {
-            var books = _context.Books.Include(b => b.Author).Include(b => b.Category);
+            var books = _context.Books
+                .Include(b => b.Author)
+                .Include(b => b.Category)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                books = books.Where(b => b.Title.Contains(searchTerm));
+            }
+
             return View(await books.ToListAsync());
         }
 
