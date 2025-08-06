@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using SSKBooks.Data;
 using SSKBooks.Services;
+using SSKBooks1.Services;
 
 public class Program
 {
@@ -25,6 +26,7 @@ public class Program
         .AddEntityFrameworkStores<SSKBooksDbContext>();
 
         builder.Services.AddScoped<IOrderService, OrderService>();
+        builder.Services.AddScoped<IBookService, BookService>();
 
         builder.Services.AddRazorPages();
         builder.Services.AddControllersWithViews();
