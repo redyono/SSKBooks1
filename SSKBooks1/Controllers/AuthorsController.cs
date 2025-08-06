@@ -1,36 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
-using SSKBooks.Data;
 using SSKBooks.Models;
+using SSKBooks.Services;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace SSKBooks1.Controllers
 {
     public class AuthorsController : Controller
     {
-        private readonly SSKBooksDbContext _context;
+        private readonly IAuthorService _authorService;
 
-        public AuthorsController(SSKBooksDbContext context)
+        public AuthorsController(IAuthorService authorService)
         {
-            _context = context;
+            _authorService = authorService;
         }
 
         // 🔓 Public
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string search)
         {
-            return View(await _context.Authors.ToListAsync());
+            var authors = string.IsNullOrWhiteSpace(search)
+                ? await _authorService.GetAllAsync()
+                : await _authorService.SearchByNameAsync(search);
+
+            ViewBag.Search = search;
+            return View(authors);
         }
 
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null) return NotFound();
 
-            var author = await _context.Authors
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var author = await _authorService.GetByIdAsync(id.Value);
             if (author == null) return NotFound();
 
             return View(author);
@@ -50,8 +51,7 @@ namespace SSKBooks1.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(author);
-                await _context.SaveChangesAsync();
+                await _authorService.CreateAsync(author);
                 return RedirectToAction(nameof(Index));
             }
             return View(author);
@@ -62,7 +62,7 @@ namespace SSKBooks1.Controllers
         {
             if (id == null) return NotFound();
 
-            var author = await _context.Authors.FindAsync(id);
+            var author = await _authorService.GetByIdAsync(id.Value);
             if (author == null) return NotFound();
 
             return View(author);
@@ -77,16 +77,9 @@ namespace SSKBooks1.Controllers
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(author);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!AuthorExists(author.Id)) return NotFound();
-                    else throw;
-                }
+                var updated = await _authorService.UpdateAsync(author);
+                if (!updated) return NotFound();
+
                 return RedirectToAction(nameof(Index));
             }
             return View(author);
@@ -97,8 +90,7 @@ namespace SSKBooks1.Controllers
         {
             if (id == null) return NotFound();
 
-            var author = await _context.Authors
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var author = await _authorService.GetByIdAsync(id.Value);
             if (author == null) return NotFound();
 
             return View(author);
@@ -109,19 +101,10 @@ namespace SSKBooks1.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var author = await _context.Authors.FindAsync(id);
-            if (author != null)
-            {
-                _context.Authors.Remove(author);
-                await _context.SaveChangesAsync();
-            }
+            var deleted = await _authorService.DeleteAsync(id);
+            if (!deleted) return NotFound();
 
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool AuthorExists(int id)
-        {
-            return _context.Authors.Any(e => e.Id == id);
         }
     }
 }

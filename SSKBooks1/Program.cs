@@ -27,6 +27,8 @@ public class Program
 
         builder.Services.AddScoped<IOrderService, OrderService>();
         builder.Services.AddScoped<IBookService, BookService>();
+        builder.Services.AddScoped<IAuthorService, AuthorService>();
+
 
         builder.Services.AddRazorPages();
         builder.Services.AddControllersWithViews();
