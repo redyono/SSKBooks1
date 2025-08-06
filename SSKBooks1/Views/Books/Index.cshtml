@@ -15,14 +15,48 @@
 }
 
 <!-- 🔍 Search Form -->
-<form method="get" class="mb-3">
-    <div class="input-group">
-        <input type="text" name="searchTerm" class="form-control"
-               placeholder="Search by title..."
-               value="@ViewContext.HttpContext.Request.Query["searchTerm"]" />
-        <button type="submit" class="btn btn-primary">Search</button>
+<form method="get" class="mb-4">
+    <div class="row g-2 align-items-end">
+        <div class="col-md-4">
+            <label class="form-label">Search by Title</label>
+            <input type="text" name="searchTerm" class="form-control"
+                   value="@ViewContext.HttpContext.Request.Query["searchTerm"]" />
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">Author</label>
+            <select name="authorId" class="form-select">
+                <option value="">All</option>
+                @foreach (var author in (SelectList)ViewData["Authors"])
+                {
+                    <option value="@author.Value"
+                            selected="@(ViewContext.HttpContext.Request.Query["authorId"] == author.Value ? "selected" : null)">
+                        @author.Text
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">Category</label>
+            <select name="categoryId" class="form-select">
+                <option value="">All</option>
+                @foreach (var category in (SelectList)ViewData["Categories"])
+                {
+                    <option value="@category.Value"
+                            selected="@(ViewContext.HttpContext.Request.Query["categoryId"] == category.Value ? "selected" : null)">
+                        @category.Text
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">Search</button>
+        </div>
     </div>
 </form>
+
 
 <table class="table">
     <thead>

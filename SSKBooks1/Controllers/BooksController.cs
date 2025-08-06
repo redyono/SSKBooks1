@@ -20,20 +20,28 @@ namespace SSKBooks1.Controllers
         }
 
         // GET: Books
-        public async Task<IActionResult> Index(string searchTerm)
+        public async Task<IActionResult> Index(string searchTerm, int? authorId, int? categoryId)
         {
+            ViewData["Authors"] = new SelectList(await _context.Authors.ToListAsync(), "Id", "Name");
+            ViewData["Categories"] = new SelectList(await _context.Categories.ToListAsync(), "Id", "Name");
+
             var books = _context.Books
                 .Include(b => b.Author)
                 .Include(b => b.Category)
                 .AsQueryable();
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
-            {
                 books = books.Where(b => b.Title.Contains(searchTerm));
-            }
+
+            if (authorId.HasValue)
+                books = books.Where(b => b.AuthorId == authorId.Value);
+
+            if (categoryId.HasValue)
+                books = books.Where(b => b.CategoryId == categoryId.Value);
 
             return View(await books.ToListAsync());
         }
+
 
         // GET: Books/Details/5
         public async Task<IActionResult> Details(int? id)
