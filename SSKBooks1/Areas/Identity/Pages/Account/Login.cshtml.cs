@@ -115,6 +115,18 @@ namespace SSKBooks1.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in.");
+
+                    // Guard against being redirected to the Logout page after successful login
+                    if (!Url.IsLocalUrl(returnUrl))
+                    {
+                        returnUrl = Url.Content("~/");
+                    }
+                    else if (returnUrl.Contains("/Identity/Account/Logout", StringComparison.OrdinalIgnoreCase) ||
+                             returnUrl.Contains("/Account/Logout", StringComparison.OrdinalIgnoreCase))
+                    {
+                        returnUrl = Url.Content("~/");
+                    }
+
                     return LocalRedirect(returnUrl);
                 }
                 if (result.RequiresTwoFactor)
@@ -136,5 +148,7 @@ namespace SSKBooks1.Areas.Identity.Pages.Account
             // If we got this far, something failed, redisplay form
             return Page();
         }
+
     }
 }
+
