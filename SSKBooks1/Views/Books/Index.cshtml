@@ -1,11 +1,11 @@
 ﻿@model IEnumerable<SSKBooks.Models.Book>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Books";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
+<h1>Books</h1>
 
 @if (User.IsInRole("Admin"))
 {
