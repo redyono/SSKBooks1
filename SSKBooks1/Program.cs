@@ -49,14 +49,12 @@ public class Program
         }
 
         // Error handling for non-development environments
+        // Error handling middleware — runs in all environments
+        app.UseExceptionHandler("/Home/Error500");
+        app.UseStatusCodePagesWithReExecute("/Home/Error{0}");
+
         if (!app.Environment.IsDevelopment())
         {
-            // 500 - Internal Server Error
-            app.UseExceptionHandler("/Home/Error500");
-
-            // 404 - Not Found
-            app.UseStatusCodePagesWithReExecute("/Home/Error{0}");
-
             app.UseHsts();
         }
 
@@ -79,5 +77,6 @@ public class Program
         app.MapRazorPages();
 
         await app.RunAsync();
+
     }
 }
